@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+
+    .form-container .form-group {
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+
+    .form-container h2 {
+        font-family: 'Playfair Display', serif;
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+    }
+
+    .btn-primary {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .helptext {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-content">
+    <div class="form-container">
+        <h2 class="mb-4">Create an Account</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group mb-3">
+                    <label class="form-label">{{ field.label_tag }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary btn-lg mt-3">Register</button>
+        </form>
+        <a href="{% url 'login' %}" class="btn btn-link mt-3">Already have an account? Login</a>
+    </div>
+</div>
+{% endblock %}

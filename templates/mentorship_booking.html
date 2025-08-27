@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .booking-form-container {
+        background: white;
+        padding: 3rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        max-width: 600px;
+        margin: 2rem auto;
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .booking-title {
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        padding: 0.75rem 1rem;
+    }
+
+    .btn-custom-submit {
+        background-color: var(--accent-color);
+        color: white;
+        font-weight: 600;
+        border-radius: 30px;
+        padding: 0.8rem 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-custom-submit:hover {
+        background-color: #048c9c;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="container py-5">
+    <div class="booking-form-container">
+        <h2 class="booking-title text-center">Book a Mentorship Session</h2>
+        <p class="text-center text-muted mb-4">Select a mentor and a time that works for you.</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="mentorSelect" class="form-label">Choose a Mentor</label>
+                <select id="mentorSelect" name="mentor" class="form-select form-control" required>
+                    <option value="" disabled selected>Select your mentor...</option>
+                    {% for mentor in mentors %}
+                    <option value="{{ mentor }}">{{ mentor }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="dateTimeInput" class="form-label">Date & Time</label>
+                <input type="datetime-local" id="dateTimeInput" name="date" class="form-control" required>
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-custom-submit">Book Session</button>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary rounded-pill">Back to Dashboard</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+    }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .quiz-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        margin: 2rem auto;
+        padding: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 900px;
+    }
+
+    .quiz-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .quiz-progress {
+        background: #f3f4f6;
+        height: 8px;
+        border-radius: 10px;
+        margin: 1rem 0;
+        overflow: hidden;
+    }
+
+    .quiz-progress-fill {
+        background: linear-gradient(90deg, var(--success-color), var(--primary-color));
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+
+    .question-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid var(--primary-color);
+    }
+
+    .question-number {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .question-text {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+    }
+
+    .option-container {
+        margin-bottom: 1rem;
+    }
+
+    .option-input {
+        display: none;
+    }
+
+    .option-label {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        background: #f8fafc;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        position: relative;
+    }
+
+    .option-label:hover {
+        border-color: var(--primary-color);
+        background: rgba(99, 102, 241, 0.05);
+    }
+
+    .option-input:checked + .option-label {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    .option-input:checked + .option-label::after {
+        content: '✓';
+        position: absolute;
+        right: 1rem;
+        color: var(--primary-color);
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .quiz-navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .btn-quiz {
+        border-radius: 25px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+    .btn-primary-quiz {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+
+    .btn-primary-quiz:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        color: white;
+    }
+
+    .btn-secondary-quiz {
+        background: #6b7280;
+        color: white;
+    }
+
+    .btn-secondary-quiz:hover {
+        background: #4b5563;
+        color: white;
+    }
+
+    .quiz-info {
+        background: rgba(99, 102, 241, 0.05);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .timer {
+        background: linear-gradient(135deg, var(--warning-color), #f97316);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="quiz-container">
+    <div class="quiz-header">
+        <h1><i class="fas fa-quiz me-3"></i>{{ lesson.title }} - Assessment</h1>
+        <p>Test your understanding and earn your completion certificate</p>
+    </div>
+
+    <div class="quiz-info">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <strong><i class="fas fa-info-circle me-2"></i>Quiz Information:</strong>
+                <p class="mb-0 mt-1">{{ quizzes|length }} questions • Passing score: 70% • Multiple attempts allowed</p>
+            </div>
+            <div class="timer">
+                <i class="fas fa-clock me-2"></i>Time: <span id="timer">15:00</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-progress">
+        <div class="quiz-progress-fill" style="width: 0%" id="progressBar"></div>
+    </div>
+    <div class="text-center mb-3">
+        <small class="text-muted">Progress: <span id="progressText">0 of {{ quizzes|length }}</span></small>
+    </div>
+
+    <form method="post" id="quizForm">
+        {% csrf_token %}
+        {% for quiz in quizzes %}
+        <div class="question-card">
+            <div class="question-number">{{ forloop.counter }}</div>
+            <h3 class="question-text">{{ quiz.question }}</h3>
+            
+            {% for option in quiz.options_list %}
+            <div class="option-container">
+                <input type="radio" 
+                       name="option_{{ quiz.id }}" 
+                       value="{{ option }}" 
+                       class="option-input" 
+                       id="option_{{ quiz.id }}_{{ forloop.counter }}"
+                       onchange="updateProgress()">
+                <label for="option_{{ quiz.id }}_{{ forloop.counter }}" class="option-label">
+                    <span class="me-3">{{ forloop.counter|add:"A"|add:-1|slice:":1" }}{{ "ABCD"|slice:forloop.counter0|slice:":1" }}</span>
+                    {{ option }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        <div class="quiz-navigation">
+            <a href="{% url 'dashboard' %}" class="btn-quiz btn-secondary-quiz">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+            <button type="submit" class="btn-quiz btn-primary-quiz">
+                <i class="fas fa-check me-2"></i>Submit Quiz
+            </button>
+        </div>
+    </form>
+</div>
+
+
+
+<script>
+    // Timer functionality
+    let timeLeft = 15 * 60; // 15 minutes in seconds
+    const timerElement = document.getElementById('timer');
+    
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            alert('Time\'s up! Submitting quiz...');
+            document.getElementById('quizForm').submit();
+            return;
+        }
+        
+        timeLeft--;
+    }
+    
+    setInterval(updateTimer, 1000);
+    
+    // Progress tracking
+    function updateProgress():{
+        const totalQuestions = {{ quizzes|length }};
+        const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
+        const progress = (answeredQuestions / totalQuestions) * 100;
+        
+        document.getElementById('progressBar').style.width = progress + '%';
+        document.getElementById('progressText').textContent = `${answeredQuestions} of ${totalQuestions}`;
+    }
+    
+    // Auto-save functionality (optional)
+    function autoSave() {
+        // You could implement auto-save to localStorage here
+        console.log('Auto-saving progress...');
+    }
+    
+    setInterval(autoSave, 30000); // Auto-save every 30 seconds
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .course-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        background: white;
+    }
+
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+
+    .card-text {
+        color: var(--text-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-course {
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 600;
+        border-radius: 30px;
+        padding: 0.8rem 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-course:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+
+</style>
+<div class="container py-5">
+    <h1 class="text-center mb-4">All Courses</h1>
+    <p class="text-center text-muted mb-5">Browse our complete list of courses designed to strengthen your marriage.</p>
+
+    <div class="row g-4">
+        {% for lesson in lessons %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card course-card h-100">
+                {% if lesson.image %}
+                <img src="{{ lesson.image.url }}" class="card-img-top" alt="{{ lesson.title }} Course Image">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ lesson.title }}</h5>
+                    <p class="card-text">{{ lesson.content|truncatewords:20 }}</p>
+                    <div class="mt-auto">
+                        <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-course w-100">View Course</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center text-muted">No courses found. Please add some courses via the admin panel.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* Hero Section Styles */
+    .hero-section {
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("{{ homepage_content.hero_image.url }}") no-repeat center center/cover;
+        color: white;
+        padding: 8rem 0;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px hwb(0 7% 93% / 0.938);
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
+        max-width: 700px;
+        margin-bottom: 2rem;
+        font-weight: 300;
+    }
+
+    .btn-hero {
+        background-color: var(--accent-color);
+        color: white;
+        font-weight: 600;
+        padding: 0.8rem 2.5rem;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-hero:hover {
+        background-color: #C2185B;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(216, 27, 96, 0.4);
+    }
+
+    /* Stats Section Styles */
+    .stat-box {
+        background: white;
+        padding: 2.5rem 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-weight: 500;
+        color: var(--text-color);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Course Card Styles */
+    .course-card .card-body {
+        text-align: center;
+    }
+
+    .course-card .card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .btn-primary-custom {
+        background-color: var(--primary-color);
+        border: none;
+        color: white;
+    }
+
+    .btn-primary-custom:hover {
+        background-color: var(--secondary-color);
+    }
+
+    /* Features Section Styles */
+    .feature-box {
+        text-align: center;
+        padding: 2rem;
+        border-radius: 15px;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-box:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .feature-box h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="hero-section text-center">
+        <div class="container">
+            {% if homepage_content %}
+                <h1 class="hero-title">{{ homepage_content.welcome_title }}</h1>
+                <p class="hero-subtitle mx-auto">{{ homepage_content.welcome_subtitle }}</p>
+            {% else %}
+                <h1 class="hero-title" style="color: black;">Welcome to Eden Marriage</h1>
+                <p class="hero-subtitle mx-auto">Discover the biblical blueprint for a fulfilling marriage.</p>
+            {% endif %}
+            <a href="{% url 'register' %}" class="btn btn-hero">Start Your Journey Today</a>
+        </div>
+    </div>
+
+    <div class="container text-center py-5">
+        <h2 class="section-title">Our Impact</h2>
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="stat-box">
+                    <p class="stat-number">1000+</p>
+                    <p class="stat-label">Happy Couples</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-box">
+                    <p class="stat-number">25+</p>
+                    <p class="stat-label">Expert-Led Courses</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-box">
+                    <p class="stat-number">500+</p>
+                    <p class="stat-label">Community Members</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <h2 class="section-title">Featured Courses</h2>
+        <div class="row g-4">
+            {% for lesson in lessons %}
+            <div class="col-md-4">
+                <div class="card course-card h-100">
+                    {% if lesson.image %}
+                    <img src="{{ lesson.image.url }}" class="card-img-top" alt="{{ lesson.title }} Course Image">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ lesson.title }}</h5>
+                        <p class="card-text">{{ lesson.content|truncatewords:15 }}</p>
+                        <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-primary-custom w-100">View Course</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p>No courses found. Please add some courses via the admin panel.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <h2 class="section-title">Why Choose Eden Marriage?</h2>
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="fas fa-bible"></i></div>
+                    <h3>Biblical Foundation</h3>
+                    <p>Our curriculum is built on timeless biblical wisdom to strengthen your faith and your marriage.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="fas fa-users"></i></div>
+                    <h3>Supportive Community</h3>
+                    <p>Connect with other couples, share experiences, and grow together in a safe, private forum.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <h3>Expert-Led Courses</h3>
+                    <p>Learn from certified marriage counselors and experienced mentors who are passionate about Christian marriages.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title">{{ lesson.title }}</h2>
+            <p class="card-text">{{ lesson.content }}</p>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h4>Quizzes for this Lesson</h4>
+
+        {% if quizzes %}
+            <ul class="list-group mb-3">
+                {% for quiz in quizzes %}
+                    <li class="list-group-item">
+                        <strong>Question {{ forloop.counter }}:</strong> {{ quiz.question }}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <!-- Button to take the full quiz -->
+            <a href="{% url 'quiz_page' lesson.id %}" class="btn btn-primary">
+                Take Lesson Quiz
+            </a>
+        {% else %}
+            <p class="text-muted">No quizzes available for this lesson yet.</p>
+        {% endif %}
+
+        <!-- Button to generate quizzes with AI -->
+        <a href="{% url 'generate_quiz_ai' lesson.id %}" class="btn btn-success mt-2">
+            Generate Quizzes with AI
+        </a>
+    </div>
+</div>
+{% endblock %}

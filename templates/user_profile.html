@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .profile-header h2 {
+        color: white;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-header p {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .info-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: white;
+        padding: 1.5rem;
+        height: 100%; /* Ensure cards are same height */
+    }
+
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-card .card-title {
+        font-family: 'Playfair Display', serif;
+        color: var(--dark-color);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .list-group-item {
+        border: none;
+        border-bottom: 1px solid #eee;
+        padding: 0.75rem 0;
+        background-color: transparent;
+    }
+
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+
+    .progress-bar-custom {
+        background-color: var(--success-color);
+    }
+
+    .no-data-message {
+        color: var(--text-color);
+        font-style: italic;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="profile-header">
+        <i class="fas fa-user-circle fa-4x mb-3"></i>
+        <h2>Hello, {{ user.username }}!</h2>
+        <p class="lead">Welcome to your personal profile. Here you can see your progress, bookings, and forum activity.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="info-card">
+                <h4 class="card-title"><i class="fas fa-book-reader me-2"></i>Your Lesson Progress</h4>
+                {% if user_progress %}
+                <ul class="list-group list-group-flush">
+                    {% for progress in user_progress %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ progress.lesson.title }}</strong>
+                            <div class="progress mt-1" style="height: 8px;">
+                                <div class="progress-bar progress-bar-custom" role="progressbar" style="width: {{ progress.score }}%;" aria-valuenow="{{ progress.score }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <small class="text-muted">Score: {{ progress.score }}%</small>
+                        </div>
+                        {% if progress.completed %}
+                            <span class="badge bg-success rounded-pill">Completed</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark rounded-pill">In Progress</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="no-data-message">You haven't started any lessons yet.</p>
+                {% endif %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'course' %}" class="btn btn-primary-custom">Browse Courses</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="info-card">
+                <h4 class="card-title"><i class="fas fa-user-tie me-2"></i>Your Mentorship Bookings</h4>
+                {% if user_bookings %}
+                <ul class="list-group list-group-flush">
+                    {% for booking in user_bookings %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ booking.mentor }}</strong>
+                            <small class="d-block text-muted">{{ booking.date|date:"F d, Y, h:i A" }}</small>
+                        </div>
+                        <span class="badge bg-info text-dark rounded-pill">{{ booking.status }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="no-data-message">You have no mentorship bookings yet.</p>
+                {% endif %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'mentorship_booking' %}" class="btn btn-primary-custom">Book a Session</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mb-4">
+            <div class="info-card">
+                <h4 class="card-title"><i class="fas fa-comments me-2"></i>Your Recent Forum Posts</h4>
+                {% if user_posts %}
+                <ul class="list-group list-group-flush">
+                    {% for post in user_posts %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ post.title }}</strong>
+                            <small class="d-block text-muted">Posted on {{ post.created_at|date:"F d, Y" }}</small>
+                        </div>
+                        <a href="{% url 'forum' %}" class="btn btn-sm btn-outline-secondary">View Post</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="no-data-message">You haven't made any forum posts yet.</p>
+                {% endif %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'forum' %}" class="btn btn-primary-custom">Go to Forum</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1 @@
+<a href="{% url 'generate_quiz_ai' lesson.id %}" class="btn btn-primary">Generate Quizzes with AI</a>

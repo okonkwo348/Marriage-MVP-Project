@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Community Forum</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <input type="text" name="title" class="form-control" placeholder="Title" required>
+    </div>
+    <div class="mb-3">
+        <textarea name="content" class="form-control" placeholder="Your message" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Post</button>
+</form>
+<h3>Posts</h3>
+{% for post in posts %}
+    <div class="card mb-2">
+        <div class="card-body">
+            <h5>{{ post.title }}</h5>
+            <p>{{ post.content }}</p>
+            <small>By {{ post.user.username }} on {{ post.created_at }}</small>
+        </div>
+    </div>
+{% endfor %}
+<a href="{% url 'dashboard' %}" class="btn btn-secondary mt-2">Back to Dashboard</a>
+{% endblock %}
