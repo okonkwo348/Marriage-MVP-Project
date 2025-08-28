@@ -1,0 +1,1 @@
+web: gunicorn eden_marriage.wsgi:application
